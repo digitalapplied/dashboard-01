@@ -1,28 +1,25 @@
-"use client"
+"use client";
 
-import type * as React from "react"
+import type * as React from "react";
 import {
   ArrowUpCircleIcon,
   BarChartIcon,
-  CameraIcon,
+  CarIcon,
   ClipboardListIcon,
   DatabaseIcon,
-  FileCodeIcon,
   FileIcon,
-  FileTextIcon,
-  FolderIcon,
   HelpCircleIcon,
   LayoutDashboardIcon,
-  ListIcon,
   SearchIcon,
   SettingsIcon,
-  UsersIcon,
-} from "lucide-react"
+} from "lucide-react";
+import { Suspense, useEffect, useState } from "react";
 
-import { NavDocuments } from "./nav-documents"
-import { NavMain } from "./nav-main"
-import { NavSecondary } from "./nav-secondary"
-import { NavUser } from "./nav-user"
+import { NavBranches } from "./nav-branches";
+import { NavDocuments } from "./nav-documents";
+import { NavMain } from "./nav-main";
+import { NavSecondary } from "./nav-secondary";
+import { NavUser } from "./nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -31,103 +28,47 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { getBranches, type Branch } from "@/lib/supabase";
 
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: "Admin",
+    email: "admin@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard",
       icon: LayoutDashboardIcon,
     },
     {
-      title: "Lifecycle",
-      url: "#",
-      icon: ListIcon,
+      title: "Vehicles",
+      url: "/dashboard/vehicles",
+      icon: CarIcon,
     },
     {
       title: "Analytics",
-      url: "#",
+      url: "/dashboard/analytics",
       icon: BarChartIcon,
     },
-    {
-      title: "Projects",
-      url: "#",
-      icon: FolderIcon,
-    },
-    {
-      title: "Team",
-      url: "#",
-      icon: UsersIcon,
-    },
   ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: CameraIcon,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: FileTextIcon,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: FileCodeIcon,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-  ],
+
   navSecondary: [
     {
       title: "Settings",
-      url: "#",
+      url: "/dashboard/settings",
       icon: SettingsIcon,
     },
     {
-      title: "Get Help",
-      url: "#",
+      title: "Help",
+      url: "/dashboard/help",
       icon: HelpCircleIcon,
     },
     {
       title: "Search",
-      url: "#",
+      url: "/dashboard/search",
       icon: SearchIcon,
     },
   ],
@@ -139,15 +80,42 @@ const data = {
     },
     {
       name: "Reports",
-      url: "#",
+      url: "/dashboard/reports",
       icon: ClipboardListIcon,
     },
     {
-      name: "Word Assistant",
-      url: "#",
+      name: "Documents",
+      url: "/dashboard/documents",
       icon: FileIcon,
     },
   ],
+};
+
+async function BranchesNav() {
+  const branches = await getBranches();
+  return <NavBranches items={branches} />;
+}
+
+// Replace with a client-side component
+function BranchesNavClient() {
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBranches = async () => {
+      const branchesData = await getBranches();
+      setBranches(branchesData);
+      setLoading(false);
+    };
+
+    fetchBranches();
+  }, []);
+
+  if (loading) {
+    return <div className="px-2 py-4">Loading branches...</div>;
+  }
+
+  return <NavBranches items={branches} />;
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -156,10 +124,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
-              <a href="#">
+            <SidebarMenuButton
+              asChild
+              className="data-[slot=sidebar-menu-button]:!p-1.5"
+            >
+              <a href="/dashboard">
                 <ArrowUpCircleIcon className="h-5 w-5" />
-                <span className="text-base font-semibold">Acme Inc.</span>
+                <span className="text-base font-semibold">Fleet Manager</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -167,6 +138,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
+        <BranchesNavClient />
         <NavDocuments items={data.documents} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
@@ -174,6 +146,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }
-

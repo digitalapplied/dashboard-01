@@ -1,8 +1,5 @@
 import { Suspense } from "react";
-import { AppSidebar } from "../../../../components/app-sidebar";
-import { SiteHeader } from "../../../../components/site-header";
 import { VehicleForm } from "../../../../components/vehicle-form";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getBranches } from "@/lib/supabase";
 
 async function NewVehicleContent() {
@@ -31,14 +28,8 @@ async function NewVehicleContent() {
 
 export default function NewVehiclePage() {
   return (
-    <SidebarProvider>
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader />
-        <Suspense fallback={<div className="p-4">Loading...</div>}>
-          <NewVehicleContent />
-        </Suspense>
-      </SidebarInset>
-    </SidebarProvider>
+    <Suspense fallback={<div className="p-4">Loading...</div>}>
+      <NewVehicleContent />
+    </Suspense>
   );
 }

@@ -1,12 +1,11 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { BuildingIcon, CarIcon } from "lucide-react"
+import * as React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { BuildingIcon, CarIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils"
-import { type Branch } from "@/lib/supabase"
+import { type Branch } from "@/lib/supabase";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -14,15 +13,14 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/sidebar";
 
 interface NavBranchesProps extends React.HTMLAttributes<HTMLDivElement> {
-  items: Branch[]
+  items: Branch[];
 }
 
 export function NavBranches({ className, items, ...props }: NavBranchesProps) {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <SidebarGroup className={className} {...props}>
@@ -30,8 +28,12 @@ export function NavBranches({ className, items, ...props }: NavBranchesProps) {
       <SidebarGroupContent>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="All Vehicles">
-              <Link href="/dashboard/vehicles">
+            <SidebarMenuButton
+              asChild
+              tooltip="All Vehicles"
+              data-active={pathname === "/dashboard/vehicles"}
+            >
+              <Link href="/dashboard/vehicles" prefetch>
                 <CarIcon />
                 <span>All Vehicles</span>
               </Link>
@@ -41,22 +43,25 @@ export function NavBranches({ className, items, ...props }: NavBranchesProps) {
 
         <SidebarGroupLabel className="pt-2">Branches</SidebarGroupLabel>
         <SidebarMenu>
-          {items.map((branch) => (
-            <SidebarMenuItem key={branch.id}>
-              <SidebarMenuButton 
-                asChild 
-                tooltip={branch.name}
-                data-active={pathname === `/dashboard/branches/${branch.id}/vehicles`}
-              >
-                <Link href={`/dashboard/branches/${branch.id}/vehicles`}>
-                  <BuildingIcon />
-                  <span>{branch.name}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+          {items.map((branch) => {
+            const branchUrl = `/dashboard/branches/${branch.id}/vehicles`;
+            return (
+              <SidebarMenuItem key={branch.id}>
+                <SidebarMenuButton
+                  asChild
+                  tooltip={branch.name}
+                  data-active={pathname === branchUrl}
+                >
+                  <Link href={branchUrl} prefetch>
+                    <BuildingIcon />
+                    <span>{branch.name}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            );
+          })}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
-  )
+  );
 }

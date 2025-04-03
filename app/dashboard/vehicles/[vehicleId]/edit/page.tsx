@@ -1,18 +1,19 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { AppSidebar } from "../../../../../components/app-sidebar";
-import { SiteHeader } from "../../../../../components/site-header";
 import { VehicleForm } from "../../../../../components/vehicle-form";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getBranches, getVehicles } from "@/lib/supabase";
 
 interface EditVehiclePageProps {
-  params: {
+  params: Promise<{
     vehicleId: string;
-  };
+  }>;
 }
 
-async function EditVehicleContent({ vehicleId }: { vehicleId: string }) {
+interface EditVehicleContentProps {
+  vehicleId: string;
+}
+
+async function EditVehicleContent({ vehicleId }: EditVehicleContentProps) {
   const [branches, vehicles] = await Promise.all([
     getBranches(),
     getVehicles(),
@@ -43,16 +44,16 @@ async function EditVehicleContent({ vehicleId }: { vehicleId: string }) {
   );
 }
 
-export default function EditVehiclePage({ params }: EditVehiclePageProps) {
+export default async function EditVehiclePage({
+  params,
+}: EditVehiclePageProps) {
+  // In Next.js 15, we must await the params object before accessing its properties
+  const resolvedParams = await params;
+  const vehicleId = resolvedParams.vehicleId;
+
   return (
-    <SidebarProvider>
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader />
-        <Suspense fallback={<div className="p-4">Loading...</div>}>
-          <EditVehicleContent vehicleId={params.vehicleId} />
-        </Suspense>
-      </SidebarInset>
-    </SidebarProvider>
+    <Suspense fallback={<div className="p-4">Loading...</div>}>
+      <EditVehicleContent vehicleId={vehicleId} />
+    </Suspense>
   );
 }

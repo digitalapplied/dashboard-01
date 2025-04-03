@@ -1,18 +1,21 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { AppSidebar } from "../../../../../../components/app-sidebar";
-import { SiteHeader } from "../../../../../../components/site-header";
 import { VehicleForm } from "../../../../../../components/vehicle-form";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getBranches } from "@/lib/supabase";
 
 interface NewBranchVehiclePageProps {
-  params: {
+  params: Promise<{
     branchId: string;
-  };
+  }>;
 }
 
-async function NewBranchVehicleContent({ branchId }: { branchId: string }) {
+interface NewBranchVehicleContentProps {
+  branchId: string;
+}
+
+async function NewBranchVehicleContent({
+  branchId,
+}: NewBranchVehicleContentProps) {
   const branches = await getBranches();
   const branch = branches.find((b) => b.id === branchId);
 
@@ -41,18 +44,16 @@ async function NewBranchVehicleContent({ branchId }: { branchId: string }) {
   );
 }
 
-export default function NewBranchVehiclePage({
+export default async function NewBranchVehiclePage({
   params,
 }: NewBranchVehiclePageProps) {
+  // In Next.js 15, we must await the params object before accessing its properties
+  const resolvedParams = await params;
+  const branchId = resolvedParams.branchId;
+
   return (
-    <SidebarProvider>
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader />
-        <Suspense fallback={<div className="p-4">Loading...</div>}>
-          <NewBranchVehicleContent branchId={params.branchId} />
-        </Suspense>
-      </SidebarInset>
-    </SidebarProvider>
+    <Suspense fallback={<div className="p-4">Loading...</div>}>
+      <NewBranchVehicleContent branchId={branchId} />
+    </Suspense>
   );
 }

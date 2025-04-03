@@ -63,7 +63,6 @@
     "@dnd-kit/sortable": "latest",
     "@dnd-kit/utilities": "latest",
     "@tanstack/react-table": "latest",
-    "tailwindcss": "latest",
     "@tailwindcss/container-queries": "latest"
   },
   "devDependencies": {

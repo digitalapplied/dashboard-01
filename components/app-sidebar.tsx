@@ -43,16 +43,6 @@ const data = {
       url: "/dashboard",
       icon: LayoutDashboardIcon,
     },
-    {
-      title: "Vehicles",
-      url: "/dashboard/vehicles",
-      icon: CarIcon,
-    },
-    {
-      title: "Analytics",
-      url: "/dashboard/analytics",
-      icon: BarChartIcon,
-    },
   ],
 
   navSecondary: [
@@ -60,33 +50,6 @@ const data = {
       title: "Settings",
       url: "/dashboard/settings",
       icon: SettingsIcon,
-    },
-    {
-      title: "Help",
-      url: "/dashboard/help",
-      icon: HelpCircleIcon,
-    },
-    {
-      title: "Search",
-      url: "/dashboard/search",
-      icon: SearchIcon,
-    },
-  ],
-  documents: [
-    {
-      name: "Data Library",
-      url: "#",
-      icon: DatabaseIcon,
-    },
-    {
-      name: "Reports",
-      url: "/dashboard/reports",
-      icon: ClipboardListIcon,
-    },
-    {
-      name: "Documents",
-      url: "/dashboard/documents",
-      icon: FileIcon,
     },
   ],
 };
@@ -139,7 +102,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={data.navMain} />
         <BranchesNavClient />
-        <NavDocuments items={data.documents} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

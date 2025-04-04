@@ -5,21 +5,21 @@ import { getBranches, getVehicles } from "@/lib/supabase";
 
 interface EditVehiclePageProps {
   params: Promise<{
-    vehicleId: string;
+    id: string;
   }>;
 }
 
 interface EditVehicleContentProps {
-  vehicleId: string;
+  id: string;
 }
 
-async function EditVehicleContent({ vehicleId }: EditVehicleContentProps) {
+async function EditVehicleContent({ id }: EditVehicleContentProps) {
   const [branches, vehicles] = await Promise.all([
     getBranches(),
     getVehicles(),
   ]);
 
-  const vehicle = vehicles.find((v) => v.id === vehicleId);
+  const vehicle = vehicles.find((v) => v.id === id);
 
   if (!vehicle) {
     notFound();
@@ -49,11 +49,11 @@ export default async function EditVehiclePage({
 }: EditVehiclePageProps) {
   // In Next.js 15, we must await the params object before accessing its properties
   const resolvedParams = await params;
-  const vehicleId = resolvedParams.vehicleId;
+  const id = resolvedParams.id;
 
   return (
     <Suspense fallback={<div className="p-4">Loading...</div>}>
-      <EditVehicleContent vehicleId={vehicleId} />
+      <EditVehicleContent id={id} />
     </Suspense>
   );
 }

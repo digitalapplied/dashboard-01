@@ -26,6 +26,7 @@ interface DeleteVehicleDialogProps {
   variant?: "ghost" | "outline" | "default";
   size?: "default" | "sm" | "lg" | "icon";
   onDeleted?: () => void;
+  trigger?: React.ReactNode;
 }
 
 export function DeleteVehicleDialog({
@@ -33,6 +34,7 @@ export function DeleteVehicleDialog({
   variant = "ghost",
   size = "icon",
   onDeleted,
+  trigger,
 }: DeleteVehicleDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -62,24 +64,26 @@ export function DeleteVehicleDialog({
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <Button
-          variant={variant}
-          size={size}
-          className={
-            variant === "default"
-              ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              : ""
-          }
-        >
-          {size === "icon" ? (
-            <TrashIcon className="h-4 w-4" />
-          ) : (
-            <>
-              <TrashIcon className="mr-2 h-4 w-4" />
-              Delete
-            </>
-          )}
-        </Button>
+        {trigger || (
+          <Button
+            variant={variant}
+            size={size}
+            className={
+              variant === "default"
+                ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                : ""
+            }
+          >
+            {size === "icon" ? (
+              <TrashIcon className="h-4 w-4" />
+            ) : (
+              <>
+                <TrashIcon className="mr-2 h-4 w-4" />
+                Delete
+              </>
+            )}
+          </Button>
+        )}
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

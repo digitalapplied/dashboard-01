@@ -43,6 +43,7 @@ import {
   ChevronsRightIcon,
   ColumnsIcon,
   GripVerticalIcon,
+  MoreVerticalIcon,
   PlusIcon,
   Edit2Icon,
 } from "lucide-react";
@@ -62,6 +63,8 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -166,23 +169,40 @@ const columns: ColumnDef<Vehicle>[] = [
       const router = useRouter();
 
       return (
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() =>
-              router.push(`/dashboard/vehicles/${vehicle.id}/edit`)
-            }
-          >
-            <Edit2Icon className="size-4" />
-          </Button>
-          <DeleteVehicleDialog
-            vehicle={{
-              id: vehicle.id,
-              fleet_number: vehicle.fleet_number,
-            }}
-          />
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
+              size="icon"
+            >
+              <MoreVerticalIcon className="size-4" />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-32">
+            <DropdownMenuItem
+              onClick={() =>
+                router.push(`/dashboard/vehicles/${vehicle.id}/edit`)
+              }
+            >
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem>View Details</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DeleteVehicleDialog
+              vehicle={{
+                id: vehicle.id,
+                fleet_number: vehicle.fleet_number,
+              }}
+              trigger={
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  Delete
+                </DropdownMenuItem>
+              }
+            />
+          </DropdownMenuContent>
+        </DropdownMenu>
       );
     },
   },

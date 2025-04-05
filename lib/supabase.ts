@@ -61,7 +61,10 @@ export async function getVehiclesByBranch(branchId: string) {
 }
 
 export async function getBranches() {
-  const { data, error } = await supabase.from("branches").select("*");
+  const { data, error } = await supabase
+    .from("branches")
+    .select("*")
+    .order("name");
 
   if (error) {
     console.error("Error fetching branches:", error);
@@ -112,6 +115,88 @@ export async function deleteVehicle(id: string) {
 
   if (error) {
     console.error("Error deleting vehicle:", error);
+    throw error;
+  }
+
+  return true;
+}
+
+export type NewBranch = {
+  name: string;
+};
+
+export type UpdateBranch = {
+  id: string;
+  name: string;
+};
+
+export async function createBranch(branch: NewBranch): Promise<Branch> {
+  if (!branch.name || branch.name.trim() === "") {
+    throw new Error("Branch name cannot be empty.");
+  }
+
+  const { data, error } = await supabase
+    .from("branches")
+    .insert({ name: branch.name.trim() })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error creating branch:", error);
+    if (error.code === "23505") {
+      throw new Error("A branch with this name already exists.");
+    }
+    throw error;
+  }
+
+  return data as Branch;
+}
+
+export async function updateBranch(branch: UpdateBranch): Promise<Branch> {
+  if (!branch.name || branch.name.trim() === "") {
+    throw new Error("Branch name cannot be empty.");
+  }
+
+  const { data, error } = await supabase
+    .from("branches")
+    .update({ name: branch.name.trim() })
+    .eq("id", branch.id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error updating branch:", error);
+    if (error.code === "23505") {
+      throw new Error("A branch with this name already exists.");
+    }
+    throw error;
+  }
+
+  return data as Branch;
+}
+
+export async function deleteBranch(id: string): Promise<boolean> {
+  const { data: vehicles, error: checkError } = await supabase
+    .from("vehicles")
+    .select("id")
+    .eq("branch_id", id)
+    .limit(1);
+
+  if (checkError) {
+    console.error("Error checking for associated vehicles:", checkError);
+    throw new Error("Could not verify if branch can be deleted.");
+  }
+
+  if (vehicles && vehicles.length > 0) {
+    throw new Error(
+      "Cannot delete branch: Vehicles are still associated with it."
+    );
+  }
+
+  const { error } = await supabase.from("branches").delete().eq("id", id);
+
+  if (error) {
+    console.error("Error deleting branch:", error);
     throw error;
   }
 

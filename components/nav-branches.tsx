@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BuildingIcon, CarIcon } from "lucide-react";
 
-import { type Branch } from "@/lib/supabase";
+import type { Branch } from "@/lib/supabase";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -31,9 +31,9 @@ export function NavBranches({ className, items, ...props }: NavBranchesProps) {
             <SidebarMenuButton
               asChild
               tooltip="All Vehicles"
-              data-active={pathname === "/dashboard/vehicles"}
+              isActive={pathname === "/dashboard/vehicles"}
             >
-              <Link href="/dashboard/vehicles" prefetch>
+              <Link href="/dashboard/vehicles" prefetch={false}>
                 <CarIcon />
                 <span>All Vehicles</span>
               </Link>
@@ -43,6 +43,13 @@ export function NavBranches({ className, items, ...props }: NavBranchesProps) {
 
         <SidebarGroupLabel className="pt-2">Branches</SidebarGroupLabel>
         <SidebarMenu>
+          {items.length === 0 && (
+            <SidebarMenuItem>
+              <SidebarMenuButton disabled size="sm">
+                <span className="text-muted-foreground">No branches found</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
           {items.map((branch) => {
             const branchUrl = `/dashboard/branches/${branch.id}/vehicles`;
             return (
@@ -50,9 +57,9 @@ export function NavBranches({ className, items, ...props }: NavBranchesProps) {
                 <SidebarMenuButton
                   asChild
                   tooltip={branch.name}
-                  data-active={pathname === branchUrl}
+                  isActive={pathname === branchUrl}
                 >
-                  <Link href={branchUrl} prefetch>
+                  <Link href={branchUrl} prefetch={false}>
                     <BuildingIcon />
                     <span>{branch.name}</span>
                   </Link>

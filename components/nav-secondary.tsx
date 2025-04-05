@@ -33,7 +33,7 @@ export function NavSecondary({
               <SidebarMenuButton
                 asChild
                 tooltip={item.title}
-                data-active={
+                isActive={
                   pathname === item.url || pathname?.startsWith(item.url + "/")
                 }
               >

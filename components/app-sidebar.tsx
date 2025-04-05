@@ -3,20 +3,14 @@
 import type * as React from "react";
 import {
   ArrowUpCircleIcon,
-  BarChartIcon,
-  CarIcon,
-  ClipboardListIcon,
-  DatabaseIcon,
-  FileIcon,
-  HelpCircleIcon,
   LayoutDashboardIcon,
-  SearchIcon,
+  MailIcon,
+  PlusCircleIcon,
   SettingsIcon,
 } from "lucide-react";
-import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-import { NavBranches } from "./nav-branches";
 import { NavMain } from "./nav-main";
 import { NavSecondary } from "./nav-secondary";
 import { NavUser } from "./nav-user";
@@ -29,8 +23,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { getBranches, type Branch } from "@/lib/supabase";
-import { usePathname } from "next/navigation";
+
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  branchesNav?: React.ReactNode;
+}
 
 const data = {
   user: {
@@ -45,7 +41,6 @@ const data = {
       icon: LayoutDashboardIcon,
     },
   ],
-
   navSecondary: [
     {
       title: "Settings",
@@ -55,38 +50,11 @@ const data = {
   ],
 };
 
-async function BranchesNav() {
-  const branches = await getBranches();
-  return <NavBranches items={branches} />;
-}
-
-// Replace with a client-side component
-function BranchesNavClient() {
-  const [branches, setBranches] = useState<Branch[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchBranches = async () => {
-      const branchesData = await getBranches();
-      setBranches(branchesData);
-      setLoading(false);
-    };
-
-    fetchBranches();
-  }, []);
-
-  if (loading) {
-    return <div className="px-2 py-4">Loading branches...</div>;
-  }
-
-  return <NavBranches items={branches} />;
-}
-
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ branchesNav, ...props }: AppSidebarProps) {
   const pathname = usePathname();
 
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -103,8 +71,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <BranchesNavClient />
+        <NavMain items={data.navMain} pathname={pathname} />
+        {branchesNav}
         <NavSecondary
           items={data.navSecondary}
           className="mt-auto"

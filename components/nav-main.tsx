@@ -14,12 +14,14 @@ import {
 
 export function NavMain({
   items,
+  pathname,
 }: {
   items: {
     title: string;
     url: string;
     icon?: LucideIcon;
   }[];
+  pathname?: string;
 }) {
   return (
     <SidebarGroup>
@@ -31,10 +33,10 @@ export function NavMain({
               className="min-w-8 bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
               asChild
             >
-              <a href="/dashboard/vehicles/new">
+              <Link href="/dashboard/vehicles/new">
                 <PlusCircleIcon />
                 <span>Quick Create</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
             <Button
               size="icon"
@@ -49,7 +51,11 @@ export function NavMain({
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton tooltip={item.title} asChild>
+              <SidebarMenuButton
+                tooltip={item.title}
+                asChild
+                isActive={pathname === item.url}
+              >
                 <Link href={item.url}>
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
